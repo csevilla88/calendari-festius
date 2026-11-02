@@ -5,8 +5,8 @@ export const MONTH_NAMES = [
 export const WEEKDAYS = ['Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg'];
 
 const PALETTE = [
-  '#2563eb', '#dc2626', '#16a34a', '#9333ea', '#ea580c',
-  '#0891b2', '#c026d3', '#65a30d', '#b45309', '#4f46e5',
+  '#2563eb', '#16a34a', '#9333ea', '#ebe70c', '#9e5c10',
+  '#2d8da5', '#94f30f', '#475569', '#d3269f',
 ];
 
 export function colorFor(userId, users) {

@@ -3,8 +3,24 @@ import { api } from '../api.js';
 import Calendar from './Calendar.jsx';
 import { fmtHours, formatDate, toISO } from '../utils.js';
 
+function dateRange(startDate, endDate) {
+  if (!startDate || !endDate || startDate > endDate) return [];
+  const dates = [];
+  const current = new Date(`${startDate}T00:00:00Z`);
+  const end = new Date(`${endDate}T00:00:00Z`);
+  while (current <= end && dates.length < 62) {
+    dates.push(current.toISOString().slice(0, 10));
+    current.setUTCDate(current.getUTCDate() + 1);
+  }
+  return current <= end ? [] : dates;
+}
+
+const holidayTypeName = (type) => type === 'public' ? 'Festiu' : "Festiu d'empresa";
+
 export default function SettingsScreen({ users, holidays, seasonStart, onChange }) {
   const [date, setDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [type, setType] = useState('company');
   const [name, setName] = useState('');
   const [message, setMessage] = useState(null);
 
@@ -14,27 +30,32 @@ export default function SettingsScreen({ users, holidays, seasonStart, onChange 
 
   useEffect(() => {
     setDate('');
+    setEndDate('');
   }, [seasonStart]);
 
-  async function addHoliday(holidayDate, holidayName, force = false) {
+  async function addHolidays(dates, holidayName, holidayType, force = false) {
     try {
-      const created = await api.createHoliday({ date: holidayDate, name: holidayName, force });
+      const created = holidayType === 'company'
+        ? await api.createCompanyHolidays({ dates, name: holidayName, force })
+        : await api.createHoliday({ date: dates[0], name: holidayName, type: 'public', force });
       const removed = created.removedEntries
         ? ` S'han anul·lat ${created.removedEntries} reserva(es) d'usuaris i se'ls han retornat les hores.`
         : '';
-      setMessage({ type: 'ok', text: `Festiu afegit: ${formatDate(holidayDate)}.${removed}` });
+      const count = holidayType === 'company' ? created.holidays.length : 1;
+      setMessage({ type: 'ok', text: `${count === 1 ? 'Festiu afegit' : `${count} festius afegits`}: ${holidayTypeName(holidayType)}.${removed}` });
       setDate('');
+      setEndDate('');
       setName('');
       await onChange();
     } catch (err) {
       const conflicts = err.data?.conflicts;
       if (err.status === 409 && conflicts?.length) {
-        const list = conflicts.map((c) => `• ${c.userName}: ${fmtHours(c.hours)}`).join('\n');
+        const list = conflicts.map((c) => `${formatDate(c.date)} · ${c.userName}: ${fmtHours(c.hours)}`).join('\n');
         const ok = confirm(
-          `Aquests usuaris ja han agafat hores el ${formatDate(holidayDate)}:\n\n${list}\n\n` +
-            "Vols marcar-lo igualment com a festiu? Les seves reserves d'aquest dia s'eliminaran i recuperaran aquestes hores."
+          `Hi ha reserves en aquestes dates:\n\n${list}\n\n` +
+            'Vols afegir els festius igualment? Les reserves afectades s’eliminaran i es retornaran les hores.'
         );
-        if (ok) await addHoliday(holidayDate, holidayName, true);
+        if (ok) await addHolidays(dates, holidayName, holidayType, true);
         return;
       }
       setMessage({ type: 'error', text: err.message });
@@ -65,34 +86,70 @@ export default function SettingsScreen({ users, holidays, seasonStart, onChange 
           className="panel form"
           onSubmit={(ev) => {
             ev.preventDefault();
-            addHoliday(date, name);
+            const dates = type === 'company' ? dateRange(date, endDate || date) : [date];
+            if (!dates.length) {
+              setMessage({ type: 'error', text: 'El rang de dates no és vàlid.' });
+              return;
+            }
+            addHolidays(dates, name, type);
           }}
         >
-          <h3>Afegir festiu d'empresa</h3>
+          <h3>Afegir festiu</h3>
           <label>
-            Dia (desembre o gener)
-            <input type="date" min={minDate} max={maxDate} value={date} onChange={(e) => setDate(e.target.value)} required />
+            Tipus
+            <select value={type} onChange={(e) => setType(e.target.value)}>
+              <option value="public">Festiu</option>
+              <option value="company">Festiu d'empresa</option>
+            </select>
           </label>
+          <label>
+            {type === 'company' ? 'Primer dia' : 'Dia'}
+            <input
+              type="date"
+              min={minDate}
+              max={maxDate}
+              value={date}
+              onChange={(e) => {
+                setDate(e.target.value);
+                setEndDate('');
+              }}
+              required
+            />
+          </label>
+          {type === 'company' && (
+            <label>
+              Darrer dia (inclòs)
+              <input
+                type="date"
+                min={date || minDate}
+                max={maxDate}
+                value={endDate || date}
+                onChange={(e) => setEndDate(e.target.value)}
+                required
+              />
+            </label>
+          )}
           <label>
             Descripció (opcional)
             <input value={name} placeholder="P. ex.: Nadal" onChange={(e) => setName(e.target.value)} maxLength={40} />
           </label>
-          <button type="submit">Marcar com a festiu</button>
+          <button type="submit">{type === 'company' ? 'Marcar festius d’empresa' : 'Marcar festiu'}</button>
           <p className="muted small">
-            Fes clic en un dia del calendari per seleccionar-lo, o en un festiu (vermell) per treure'l.
-            Ningú no podrà agafar hores als festius d'empresa.
+            Els festius generals es mostren en vermell i els d’empresa en taronja. Tots dos bloquegen reserves.
+            Al calendari pots seleccionar una data o treure un festiu existent.
           </p>
         </form>
 
         <div className="panel">
           <h3>Festius de la temporada {seasonStart}/{seasonStart + 1}</h3>
           {seasonHolidays.length === 0 ? (
-            <p className="muted">No hi ha festius d'empresa configurats.</p>
+            <p className="muted">No hi ha festius configurats.</p>
           ) : (
             <table className="entries">
               <tbody>
                 {seasonHolidays.map((h) => (
                   <tr key={h.id}>
+                    <td><span className={`holiday-kind ${h.type === 'public' ? 'public-holiday' : 'company-holiday'}`}>{holidayTypeName(h.type)}</span></td>
                     <td>{formatDate(h.date)}</td>
                     <td>{h.name}</td>
                     <td>

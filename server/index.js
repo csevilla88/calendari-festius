@@ -35,6 +35,18 @@ async function usedHours(userId, excludeEntryId) {
   return round2(entries.reduce((sum, entry) => sum + entry.hours, 0));
 }
 
+async function holidayConflicts(dates) {
+  const entries = await Entry.find({ date: { $in: dates } }).lean();
+  const userIds = [...new Set(entries.map((entry) => entry.userId))];
+  const users = await User.find({ id: { $in: userIds } }).select('id name');
+  const names = new Map(users.map((user) => [user.id, user.name]));
+  return entries.map((entry) => ({
+    date: entry.date,
+    userName: names.get(entry.userId) ?? '?',
+    hours: entry.hours,
+  }));
+}
+
 function withSummary(user, used) {
   return { ...user.toObject(), usedHours: used, remainingHours: round2(user.totalHours - used) };
 }
@@ -172,32 +184,60 @@ app.get('/api/holidays', asyncRoute(async (_req, res) => {
 app.post('/api/holidays', asyncRoute(async (req, res) => {
   const { date, force } = req.body;
   const name = String(req.body.name || '').trim();
+  const type = req.body.type || 'company';
   if (!isValidDecJanDate(date)) {
     return res.status(400).json({ error: 'La data ha de ser un dia de desembre o gener.' });
   }
-
-  if (await Holiday.exists({ date })) {
-    return res.status(409).json({ error: "Aquest dia ja està marcat com a festiu d'empresa." });
+  if (!['public', 'company'].includes(type)) {
+    return res.status(400).json({ error: 'El tipus de festiu no és vàlid.' });
   }
 
-  const conflicts = await Entry.find({ date });
+  if (await Holiday.exists({ date })) {
+    return res.status(409).json({ error: 'Aquest dia ja està marcat com a festiu.' });
+  }
+
+  const conflicts = await holidayConflicts([date]);
   if (conflicts.length && !force) {
-    const userIds = [...new Set(conflicts.map((entry) => entry.userId))];
-    const users = await User.find({ id: { $in: userIds } }).select('id name');
-    const names = new Map(users.map((user) => [user.id, user.name]));
-    const detail = conflicts.map((e) => ({
-      userName: names.get(e.userId) ?? '?',
-      hours: e.hours,
-    }));
     return res.status(409).json({
       error: 'Hi ha usuaris que ja han agafat hores aquest dia.',
-      conflicts: detail,
+      conflicts,
     });
   }
 
   if (conflicts.length) await Entry.deleteMany({ date });
-  const holiday = await Holiday.create({ date, name });
+  const holiday = await Holiday.create({ date, name, type });
   res.status(201).json({ ...holiday.toObject(), removedEntries: conflicts.length });
+}));
+
+app.post('/api/holidays/bulk', asyncRoute(async (req, res) => {
+  const { dates, force } = req.body;
+  const name = String(req.body.name || '').trim();
+  if (!Array.isArray(dates) || dates.length < 1 || dates.length > 62) {
+    return res.status(400).json({ error: 'Cal indicar entre 1 i 62 dates.' });
+  }
+  if (new Set(dates).size !== dates.length || dates.some((date) => !isValidDecJanDate(date))) {
+    return res.status(400).json({ error: 'Les dates han de ser úniques i de desembre o gener.' });
+  }
+
+  const existing = await Holiday.find({ date: { $in: dates } }).select('date').lean();
+  if (existing.length) {
+    return res.status(409).json({
+      error: 'Algunes dates ja estan marcades com a festiu.',
+      existingDates: existing.map((holiday) => holiday.date),
+    });
+  }
+
+  const conflicts = await holidayConflicts(dates);
+  if (conflicts.length && !force) {
+    return res.status(409).json({
+      error: 'Hi ha usuaris que ja han agafat hores en algunes dates.',
+      conflicts,
+    });
+  }
+
+  if (conflicts.length) await Entry.deleteMany({ date: { $in: dates } });
+  const holidays = await Holiday.insertMany(dates.map((date) => ({ date, name, type: 'company' })));
+  res.status(201).json({ holidays, removedEntries: conflicts.length });
 }));
 
 app.delete('/api/holidays/:id', asyncRoute(async (req, res) => {

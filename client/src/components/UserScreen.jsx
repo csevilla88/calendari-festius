@@ -151,6 +151,7 @@ export default function UserScreen({ users, entries, holidays, seasonStart, sele
                 Dia (desembre o gener)
                 <input type="date" min={minDate} max={maxDate} value={date} onChange={(e) => pickDay(e.target.value)} required />
               </label>
+              <p className="muted small">* Pots fer clic en un dia del calendari.</p>
               <label>
                 Hores de festa aquest dia
                 <input type="number" min="0.5" max="24" step="0.5" value={hours} onChange={(e) => setHours(e.target.value)} required />
@@ -169,7 +170,8 @@ export default function UserScreen({ users, entries, holidays, seasonStart, sele
               <button type="submit" disabled={previewRemaining < 0 || Boolean(holidayForDate)}>
                 {existingForDate ? 'Actualitzar dia' : 'Afegir dia'}
               </button>
-              <p className="muted small">Consell: també pots fer clic en un dia del calendari.</p>
+              
+              <div className="llegendaAlert">🤚 Recorda que els dies 24/12 i 5/01 treballem 5 hores!!!</div>
             </form>
 
             <div className="panel">
@@ -184,8 +186,8 @@ export default function UserScreen({ users, entries, holidays, seasonStart, sele
                         <td>{formatDate(e.date)}</td>
                         <td className="num">{fmtHours(e.hours)}</td>
                         <td>
-                          <button className="link" onClick={() => pickDay(e.date)}>Editar</button>
-                          <button className="link danger" onClick={() => removeEntry(e)}>Eliminar</button>
+                          <button className="link" onClick={() => pickDay(e.date)} title="Editar">✏️</button>
+                          <button className="link danger" onClick={() => removeEntry(e)} title="Eliminar">🗑️</button>
                         </td>
                       </tr>
                     ))}

@@ -33,10 +33,10 @@ export default function App() {
   return (
     <div className="app">
       <header className="header">
-        <h1>🎄 Festius desembre – gener</h1>
+        <h1>🎄 Organització dels Festius desembre – gener</h1>
         <div className="season">
           <button onClick={() => setSeasonStart((y) => y - 1)} aria-label="Temporada anterior">◀</button>
-          <span>Temporada {seasonStart}/{seasonStart + 1}</span>
+          <span>{seasonStart}/{seasonStart + 1}</span>
           <button onClick={() => setSeasonStart((y) => y + 1)} aria-label="Temporada següent">▶</button>
         </div>
         <nav className="tabs">

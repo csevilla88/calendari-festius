@@ -13,12 +13,11 @@ que agafa cada usuari al desembre i al gener.
   - Afegir dies (data + hores d'aquell dia) des del formulari o fent clic al calendari.
   - Editar o eliminar dies. Les hores restants es recalculen a l'instant.
   - No permet superar les hores totals ni posar un total inferior a les hores ja agafades.
-- **Configuració – festius d'empresa**:
-  - Marcar dies de desembre/gener com a festiu d'empresa (amb descripció opcional), des del
-    formulari o fent clic al calendari; clic sobre un festiu per treure'l.
-  - Els festius es pinten amb tota la casella en vermell a tots els calendaris.
-  - Ningú no pot agafar hores aquests dies. Si en marcar un festiu ja hi havia usuaris amb hores
-    aquell dia, s'avisa i, si es confirma, s'anul·len aquestes reserves i se'ls retornen les hores.
+- **Configuració – festius**:
+  - Afegir festius generals i festius d'empresa, que es mostren en vermell i taronja, respectivament.
+  - Afegir intervals de dies consecutius de festius d'empresa en una sola operació.
+  - Ningú no pot agafar hores aquests dies. Si ja hi ha reserves, s'avisa i, si es confirma,
+    s'anul·len les afectades i se'n retornen les hores.
 
 ## Requisits
 
@@ -72,6 +71,7 @@ a desplegar Vercel perquè la variable queda inclosa al build del frontend.
 | GET | `/api/entries?userId=` | Dies de festa |
 | POST | `/api/entries` | `{ userId, date: "YYYY-MM-DD", hours }` (si el dia ja existeix, n'actualitza les hores) |
 | DELETE | `/api/entries/:id` | Elimina un dia |
-| GET | `/api/holidays` | Festius d'empresa |
-| POST | `/api/holidays` | `{ date, name?, force? }` — 409 amb `conflicts` si hi ha usuaris amb hores aquell dia (usar `force: true` per anul·lar-les) |
-| DELETE | `/api/holidays/:id` | Treu un festiu d'empresa |
+| GET | `/api/holidays` | Llista festius generals (`type: "public"`) i d'empresa (`type: "company"`) |
+| POST | `/api/holidays` | `{ date, name?, type?, force? }` — `type` pot ser `public` o `company` (per defecte `company`) |
+| POST | `/api/holidays/bulk` | `{ dates, name?, force? }` — crea diversos festius d'empresa consecutius; 409 amb `conflicts` si hi ha reserves |
+| DELETE | `/api/holidays/:id` | Treu un festiu |

@@ -27,5 +27,6 @@ export const api = {
   deleteEntry: (id) => request(`/api/entries/${id}`, { method: 'DELETE' }),
   getHolidays: () => request('/api/holidays'),
   createHoliday: (holiday) => request('/api/holidays', { method: 'POST', body: holiday }),
+  createCompanyHolidays: (holidays) => request('/api/holidays/bulk', { method: 'POST', body: holidays }),
   deleteHoliday: (id) => request(`/api/holidays/${id}`, { method: 'DELETE' }),
 };
