@@ -1,0 +1,21 @@
+{
+  "name": "calendario-festivos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Calendari de festius de desembre i gener per usuari",
+  "type": "module",
+  "scripts": {
+    "install:all": "npm install && npm install --prefix client",
+    "dev": "concurrently -n api,web -c blue,green \"node --watch server/index.js\" \"npm run dev --prefix client\"",
+    "build": "npm run build --prefix client",
+    "start": "node server/index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.5"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
