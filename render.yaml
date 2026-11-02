@@ -12,3 +12,5 @@ services:
         sync: false
       - key: MONGO_DB_NAME
         value: calendario_festivos
+      - key: CORS_ORIGIN
+        sync: false

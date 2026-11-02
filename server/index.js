@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -12,6 +13,8 @@ const PORT = process.env.PORT || 3001;
 const MAX_HOURS_PER_DAY = 24;
 
 const app = express();
+const allowedOrigins = (process.env.CORS_ORIGIN || '').split(',').map((origin) => origin.trim()).filter(Boolean);
+app.use(cors({ origin: allowedOrigins.length ? allowedOrigins : false }));
 app.use(express.json());
 
 const round2 = (n) => Math.round(n * 100) / 100;

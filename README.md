@@ -54,6 +54,13 @@ Les dades s'emmagatzemen a la base `calendario_festivos` de MongoDB (configurabl
 `MONGO_DB_NAME`). La connexió es configura amb `MONGO_URI` al fitxer `server/.env`; aquest
 fitxer no s'ha de pujar al repositori. L'API usa el port `3001` per defecte.
 
+## Desplegament
+
+Al servei de Render, configura `MONGO_URI` i `CORS_ORIGIN` (el domini complet de Vercel,
+per exemple `https://calendari.vercel.app`). A Vercel, defineix `VITE_API_URL` amb la URL
+base del servei Render, sense una ruta com `/api`. Després de canviar `VITE_API_URL`, torna
+a desplegar Vercel perquè la variable queda inclosa al build del frontend.
+
 ## API
 
 | Mètode | Ruta | Descripció |
