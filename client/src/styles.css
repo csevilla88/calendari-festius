@@ -127,18 +127,24 @@ input, select {
 .day.holiday.company-holiday,
 .day.holiday.company-holiday.weekend,
 .day.holiday.company-holiday.clickable:hover { background: #ec6f2b; border-color: #ec6f2b; color: #fff; cursor: not-allowed; }
+.day.holiday.other-holiday,
+.day.holiday.other-holiday.weekend,
+.day.holiday.other-holiday.clickable:hover { background: #29c9d4; border-color: #22afb9; color: #fff; cursor: not-allowed; }
 .day.holiday.clickable { cursor: pointer; }
 .day.holiday .day-number { color: #fff; }
 .day.holiday.public-holiday.selected { background: #b91c1c; }
 .day.holiday.company-holiday.selected { background: #ec6f2b; }
+.day.holiday.other-holiday.selected { background: #29c9d4; }
 .holiday-name { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
 .legend { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; margin: 12px 0 0; }
 .legend-box { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
 .legend-box.public-holiday { background: #dc2626; }
 .legend-box.company-holiday { background: #ec6f2b; }
+.legend-box.other-holiday { background: #29c9d4; }
 .holiday-kind { font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
 .holiday-kind.public-holiday { color: #b91c1c; }
 .holiday-kind.company-holiday { color: #ec6f2b; }
+.holiday-kind.other-holiday { color: #29c9d4; }
 .day-number { font-size: 0.8rem; font-weight: 600; }
 .chips { display: flex; flex-direction: column; gap: 2px; }
 .chip {
@@ -155,6 +161,7 @@ input, select {
 .entries { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 .entries td { padding: 6px 4px; border-bottom: 1px solid #e2e8f0; }
 .entries .num { text-align: right; white-space: nowrap; }
+.holiday-list-scroll { max-height: 400px; overflow-y: auto; overscroll-behavior: contain; }
 .link { border: none; background: none; color: #2563eb; padding: 2px 4px; }
 .link.danger { color: #dc2626; }
 .llegendaAlert {

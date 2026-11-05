@@ -5,7 +5,7 @@ const holidaySchema = new mongoose.Schema({
   id: { type: String, default: randomUUID, unique: true },
   date: { type: String, required: true, unique: true },
   name: { type: String, default: '', trim: true },
-  type: { type: String, enum: ['public', 'company'], default: 'company' },
+  type: { type: String, enum: ['public', 'company', 'other'], default: 'company' },
 }, { collection: 'calendar_holidays' });
 
 holidaySchema.set('toJSON', {

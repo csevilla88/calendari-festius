@@ -71,7 +71,7 @@ a desplegar Vercel perquè la variable queda inclosa al build del frontend.
 | GET | `/api/entries?userId=` | Dies de festa |
 | POST | `/api/entries` | `{ userId, date: "YYYY-MM-DD", hours }` (si el dia ja existeix, n'actualitza les hores) |
 | DELETE | `/api/entries/:id` | Elimina un dia |
-| GET | `/api/holidays` | Llista festius generals (`type: "public"`) i d'empresa (`type: "company"`) |
-| POST | `/api/holidays` | `{ date, name?, type?, force? }` — `type` pot ser `public` o `company` (per defecte `company`) |
-| POST | `/api/holidays/bulk` | `{ dates, name?, force? }` — crea diversos festius d'empresa consecutius; 409 amb `conflicts` si hi ha reserves |
+| GET | `/api/holidays` | Llista festius generals (`public`), d'empresa (`company`) i altres (`other`) |
+| POST | `/api/holidays` | `{ date, name?, type?, force? }` — `type` pot ser `public`, `company` o `other` |
+| POST | `/api/holidays/bulk` | `{ dates, name?, type?, force? }` — crea diverses dates del tipus indicat; 409 amb `conflicts` si hi ha reserves |
 | DELETE | `/api/holidays/:id` | Treu un festiu |

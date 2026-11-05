@@ -30,6 +30,7 @@ export default function CalendarScreen({ users, entries, holidays, seasonStart }
         </ul>
         <p className="legend"><span className="legend-box public-holiday" /> Festiu</p>
         <p className="legend"><span className="legend-box company-holiday" /> Festiu d'empresa</p>
+        <p className="legend"><span className="legend-box other-holiday" /> Altres</p>
       </aside>
       <Calendar users={users} entries={visible} holidays={holidays} seasonStart={seasonStart} />
     </div>

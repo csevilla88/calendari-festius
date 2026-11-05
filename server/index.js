@@ -188,7 +188,7 @@ app.post('/api/holidays', asyncRoute(async (req, res) => {
   if (!isValidDecJanDate(date)) {
     return res.status(400).json({ error: 'La data ha de ser un dia de desembre o gener.' });
   }
-  if (!['public', 'company'].includes(type)) {
+  if (!['public', 'company', 'other'].includes(type)) {
     return res.status(400).json({ error: 'El tipus de festiu no és vàlid.' });
   }
 
@@ -212,8 +212,12 @@ app.post('/api/holidays', asyncRoute(async (req, res) => {
 app.post('/api/holidays/bulk', asyncRoute(async (req, res) => {
   const { dates, force } = req.body;
   const name = String(req.body.name || '').trim();
+  const type = req.body.type || 'company';
   if (!Array.isArray(dates) || dates.length < 1 || dates.length > 62) {
     return res.status(400).json({ error: 'Cal indicar entre 1 i 62 dates.' });
+  }
+  if (!['public', 'company', 'other'].includes(type)) {
+    return res.status(400).json({ error: 'El tipus de festiu no és vàlid.' });
   }
   if (new Set(dates).size !== dates.length || dates.some((date) => !isValidDecJanDate(date))) {
     return res.status(400).json({ error: 'Les dates han de ser úniques i de desembre o gener.' });
@@ -236,7 +240,7 @@ app.post('/api/holidays/bulk', asyncRoute(async (req, res) => {
   }
 
   if (conflicts.length) await Entry.deleteMany({ date: { $in: dates } });
-  const holidays = await Holiday.insertMany(dates.map((date) => ({ date, name, type: 'company' })));
+  const holidays = await Holiday.insertMany(dates.map((date) => ({ date, name, type })));
   res.status(201).json({ holidays, removedEntries: conflicts.length });
 }));
 

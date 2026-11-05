@@ -20,7 +20,7 @@ function MonthGrid({ year, month, entriesByDate, holidaysByDate, users, selected
     const clickable = onDayClick && (!holiday || allowHolidayClick);
     const classes = ['day'];
     if (weekday >= 5) classes.push('weekend');
-    if (holiday) classes.push('holiday', holidayType === 'company' ? 'company-holiday' : 'public-holiday');
+    if (holiday) classes.push('holiday', holidayType === 'company' ? 'company-holiday' : holidayType === 'other' ? 'other-holiday' : 'public-holiday');
     if (iso === todayISO) classes.push('today');
     if (iso === selectedDate) classes.push('selected');
     if (clickable) classes.push('clickable');
@@ -30,10 +30,10 @@ function MonthGrid({ year, month, entriesByDate, holidaysByDate, users, selected
         key={iso}
         className={classes.join(' ')}
         onClick={clickable ? () => onDayClick(iso) : undefined}
-        title={holiday ? `${holidayType === 'company' ? "Festiu d'empresa" : 'Festiu'}${holiday.name ? `: ${holiday.name}` : ''}` : undefined}
+        title={holiday ? `${holidayType === 'company' ? "Festiu d'empresa" : holidayType === 'other' ? 'Altres' : 'Festiu'}${holiday.name ? `: ${holiday.name}` : ''}` : undefined}
       >
         <span className="day-number">{d}</span>
-        {holiday && <span className="holiday-name">{holiday.name || (holidayType === 'company' ? "Festiu d'empresa" : 'Festiu')}</span>}
+        {holiday && <span className="holiday-name">{holiday.name || (holidayType === 'company' ? "Festiu d'empresa" : holidayType === 'other' ? 'Altres' : 'Festiu')}</span>}
         <div className="chips">
           {dayEntries.map((e) => {
             const user = users.find((u) => u.id === e.userId);
