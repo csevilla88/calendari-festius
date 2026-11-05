@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: calendario-festivos-api
+    name: calendari-festius-USD
     runtime: node
     plan: free
     buildCommand: npm run install:all && npm run build
