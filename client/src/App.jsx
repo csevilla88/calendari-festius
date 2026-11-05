@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { api } from './api.js';
 import { defaultSeasonStart } from './utils.js';
 import CalendarScreen from './components/CalendarScreen.jsx';
+import TimelineScreen from './components/TimelineScreen.jsx';
 import UserScreen from './components/UserScreen.jsx';
 import SettingsScreen from './components/SettingsScreen.jsx';
 
@@ -43,6 +44,9 @@ export default function App() {
           <button className={tab === 'calendar' ? 'active' : ''} onClick={() => setTab('calendar')}>
             📅 Calendari
           </button>
+          <button className={tab === 'timeline' ? 'active' : ''} onClick={() => setTab('timeline')}>
+            📏 Línia temporal
+          </button>
           <button className={tab === 'user' ? 'active' : ''} onClick={() => setTab('user')}>
             ✏️ Els meus dies de festa
           </button>
@@ -57,6 +61,9 @@ export default function App() {
       <main>
         {tab === 'calendar' && (
           <CalendarScreen users={users} entries={entries} holidays={holidays} seasonStart={seasonStart} />
+        )}
+        {tab === 'timeline' && (
+          <TimelineScreen users={users} entries={entries} holidays={holidays} seasonStart={seasonStart} />
         )}
         {tab === 'user' && (
           <UserScreen

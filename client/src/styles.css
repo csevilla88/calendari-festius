@@ -39,6 +39,7 @@ input, select {
 .header h1 { margin: 0; font-size: 2.0rem; }
 .season { display: flex; align-items: center; gap: 8px; font-weight: 600; }
 .tabs { display: flex; gap: 4px; }
+.tabs { flex-wrap: wrap; }
 .tabs button.active { background: #0f172a; color: #fff; border-color: #0f172a; }
 
 .panel {
@@ -70,6 +71,39 @@ input, select {
   gap: 16px;
   align-items: start;
 }
+.timeline-screen { display: flex; flex-direction: column; gap: 12px; }
+.timeline-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 20px; }
+.timeline-toolbar h2 { margin: 0; font-size: 1.15rem; }
+.timeline-legend { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; font-size: 0.82rem; }
+.timeline-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.timeline-swatch, .timeline-user-swatch { display: inline-block; flex: 0 0 auto; width: 12px; height: 12px; border-radius: 3px; }
+.timeline-swatch.public-holiday { background: #dc2626; }
+.timeline-swatch.company-holiday { background: #ec6f2b; }
+.timeline-swatch.other-holiday { background: #29c9d4; }
+.timeline-scroll { max-width: 100%; max-height: min(70vh, 680px); overflow: auto; overscroll-behavior: contain; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; }
+.timeline-table { width: max-content; min-width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0; font-size: 0.78rem; }
+.timeline-table th, .timeline-table td { height: 38px; padding: 3px; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; text-align: center; }
+.timeline-table thead th { position: sticky; top: 0; z-index: 2; background: #f1f5f9; font-weight: 700; }
+.timeline-table thead tr:first-child th { height: 36px; }
+.timeline-table thead tr:nth-child(2) th { top: 36px; }
+.timeline-table .timeline-user-column { position: sticky; left: 0; z-index: 3; width: 190px; min-width: 190px; max-width: 190px; background: #fff; text-align: left; }
+.timeline-table thead .timeline-user-column { z-index: 4; background: #f1f5f9; }
+.timeline-table thead .timeline-month-spacer { top: 0; }
+.timeline-table .timeline-day { width: 40px; min-width: 40px; padding: 3px 1px; }
+.timeline-table .timeline-day.weekend { background: #e2e8f0; }
+.timeline-table .timeline-day.holiday-public { background: #dc2626; color: #fff; }
+.timeline-table .timeline-day.holiday-company { background: #ec6f2b; color: #fff; }
+.timeline-table .timeline-day.holiday-other { background: #29c9d4; color: #083344; }
+.timeline-table .timeline-cell { width: 40px; min-width: 40px; height: 34px; padding: 2px; }
+.timeline-table .timeline-cell.weekend { background: #f8fafc; }
+.timeline-table .timeline-cell.holiday-public { background: #fee2e2; }
+.timeline-table .timeline-cell.holiday-company { background: #ffedd5; }
+.timeline-table .timeline-cell.holiday-other { background: #cffafe; }
+.timeline-user-name { display: flex; align-items: center; gap: 7px; overflow: hidden; font-size: 0.85rem; font-weight: 700; }
+.timeline-user-name .timeline-user-swatch { border-radius: 50%; }
+.timeline-user-column small { display: block; padding: 2px 0 0 19px; color: #64748b; font-size: 0.7rem; font-weight: 400; }
+.timeline-entry { display: block; width: 100%; overflow: hidden; border-radius: 3px; color: #fff; font-size: 0.68rem; font-weight: 700; line-height: 24px; text-overflow: clip; white-space: nowrap; }
+.timeline-empty { height: 80px !important; color: #64748b; text-align: center !important; }
 .side { display: flex; flex-direction: column; gap: 12px; }
 
 @media (max-width: 900px) {
